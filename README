@@ -1,3 +1,10 @@
 Terremotos:
   
-      2010 a 2018
+      De: 2010 a 2018
+
+
+Maquina virtual: ~/virtual/py36
+
+      $ source ~/virtual/py36/bin/activate
+      
+      (py36) ➜ 
