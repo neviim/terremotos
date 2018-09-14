@@ -1,10 +1,22 @@
 Terremotos:
   
-      De: 2010 a 2018
+      De: 2010 a 2018 
+
+            Base de terremotos de 2010 a 2018, esta em arquivo csv, 
+            mas pretendo codificar algo para extrair altomaticamente de la.
 
 
-Maquina virtual: ~/virtual/py36
+      Dependencias:
 
-      $ source ~/virtual/py36/bin/activate
-      
-      (py36) ➜ 
+            pip install requests
+            pip install lxml
+            pip install json
+
+
+      Maquina virtual: ~/virtual/py36
+
+            $ source ~/virtual/py36/bin/activate
+            (py36) ➜ 
+
+
+      Class AlertaNt7Terremotos
