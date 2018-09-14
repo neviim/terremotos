@@ -18,6 +18,7 @@ Terremotos:
             Utilizando python 3.6
 
             $ source ~/virtual/py36/bin/activate
+            
             (py36) ➜
             (py36) ➜
             (py36) ➜ python alerta_nt7.py 
