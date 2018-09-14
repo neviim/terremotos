@@ -15,6 +15,8 @@ Terremotos:
 
       Maquina virtual: ~/virtual/py36
 
+            Utilizando python 3.6
+
             $ source ~/virtual/py36/bin/activate
             (py36) ➜ 
 
