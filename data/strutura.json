@@ -1,0 +1,80 @@
+{   "schema": 
+        {   "fields":[  {"name":"index","type":"string"},
+                        {"name":"hora_origem","type":"string"},
+                        {"name":"longitude","type":"string"},
+                        {"name":"latirude","type":"string"},
+                        {"name":"prof","type":"string"},
+                        {"name":"modo","type":"string"},
+                        {"name":"magnitude","type":"number"},
+                        {"name":"magvalor","type":"string"},
+                        {"name":"magunidade","type":"string"},
+                        {"name":"regiao","type":"string"}
+                    ],
+            "pandas_version":"0.20.0"
+        },  
+    
+    "data": [ { "index":"2018-09-10 04:18:48 UTC",
+                "hora_origem":"2018-09-10 04:18:48 UTC",
+                "longitude":"-179.49",
+                "latirude":"-31.64",
+                "prof":"\\u00a010.0",
+                "modo":"M",
+                "magnitude":null,
+                "magvalor":"6.5",
+                "magunidade":"Mwp",
+                "regiao":"Kermadec Islands Region"},
+                  
+              { "index":"2018-09-09 19:31:27 UTC",
+                 "hora_origem":"2018-09-09 19:31:27 UTC",
+                 "longitude":"\\u00a0161.47",
+                 "latirude":"\\u00a0-9.89",
+                 "prof":"\\u00a010.0",
+                 "modo":"M",
+                 "magnitude":null,
+                 "magvalor":"6.1",
+                 "magunidade":"Mwp",
+                 "regiao":"Solomon Islands"},
+                      
+               { "index":"2018-09-09 00:06:22 UTC",
+                 "hora_origem":"2018-09-09 00:06:22 UTC",
+                 "longitude":"\\u00a0179.93",
+                 "latirude":"-24.88",
+                 "prof":"466.3",
+                 "modo":"M",
+                 "magnitude":null,
+                 "magvalor":"5.3",
+                 "magunidade":"mb",
+                 "regiao":"South of Fiji Islands"}
+            ] 
+}
+
+
+#  <class 'str'>
+
+[ { "hora_gmt_utc":  ["18/09/2018", "09:25"], 
+    "hora_brasilia": ["18/09/2018", "06:25"], 
+    "intensidade": "Terremoto Moderado", 
+    "magnitude": "5.2", 
+    "profundidade": ["10", "km"], 
+    "localidade_pais": ["126km N of Dili", " East Timor"], 
+    "key": "a649218d1b23de97f20c14573a0e019d76962e8c"
+  },  
+  { "hora_gmt_utc": ["18/09/2018", "09:24"], 
+    "hora_brasilia": ["18/09/2018", "06:24"], 
+    "intensidade": "Terremoto Moderado", 
+    "magnitude": "5.2", 
+    "profundidade": ["64.32", "km"], 
+    "localidade_pais": ["90km S of Raoul Island", " New Zealand"], 
+    "key": "78cde52ae529ed7116d3f0b428ff6f9343c5a5eb"
+  }
+]
+
+
+# referencias
+  https://www.devmedia.com.br/introducao-ao-mongodb/30792
+
+  # datatime e timezones 
+  http://api.mongodb.com/python/current/examples/datetimes.html
+
+  # registra uma data no banco:
+      result = db.objects.insert_one({"last_modified": datetime.datetime.utcnow()})
