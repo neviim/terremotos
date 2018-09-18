@@ -1,16 +1,70 @@
 Terremotos:
   
-      De: 2010 a 2018 
+      As consulta a base das ultimas 200 ocorrencia de terremoto no mundo:
 
-            Base de terremotos de 2010 a 2018, esta em arquivo csv, 
-            mas pretendo codificar algo para extrair altomaticamente de la.
+            Últimas 200 ocorrências de terremotos ocorridas no mundo, este script faz a leitura por scraping desta lista
+            armazena em um banco de dados Mongodb e ao ser executado novamente ele verifica se os dados recebidos estão
+            gravados, não estando efetua a inserção evitando haver duplicação na base podendo ser executado quantas vezes
+            for necessária, ele só fará o incremento caso seja uma nova ocorrência.
 
 
       Dependencias:
 
             pip install requests
+            pip install pymongo
             pip install lxml
             pip install json
+
+
+      Banco de dados: 
+
+            Mongodb é considerado que esteja Up
+            com o banco e a collection criada.
+
+                  Cria database...: terremotos
+                  Cria Collections: registros
+
+
+      Ferramentas utilizadas:
+
+            Python 3.6
+            Robo3T 1.2
+
+
+      Classe implementada:
+
+            AlertaNt7Terremotos()
+
+                  Metodos:
+
+                         cripto_md5(self, texto, encoding='utf-8')
+                         cripto_sha1(self, texto, encoding='utf-8')
+                         scraping(self)
+                         cria_json(self, dados)
+                         data_hora(self, localidade='America/Sao_Paulo', formato='%d/%m/%Y %H:%M')
+                         grava_novas_ocorrencias(self, listjson, host='devops.joaopauloii', porta=27017)
+      
+
+      Modo de uso:
+
+            import alerta_nt7 as tr 
+
+            # utilizando class alertaNt7Terremotos estrair dados
+            url = 'http://monitorglobal.com.br/terremotos.html'
+            tjson = []
+
+            # conecta no site e captura as 200 ultimas ocorrencias
+            terremotos = tr.AlertaNt7Terremotos(url)
+            scrap = terremotos.scraping()
+            listjson = terremotos.cria_json(scrap)
+
+            # os insidentes que nao estiver no banco serão gravados.
+            terremotos.grava_novas_ocorrencias(listjson)
+
+            # retorna data e hora local em dois formatos
+            data1, data2 = terremotos.data_hora()
+            print(data1, data2)           
+
 
 
       Maquina virtual: ~/virtual/py36
@@ -18,10 +72,7 @@ Terremotos:
             Utilizando python 3.6
 
             $ source ~/virtual/py36/bin/activate
-            
+                        
             (py36) ➜
             (py36) ➜
             (py36) ➜ python alerta_nt7.py 
-
-
-      Class AlertaNt7Terremotos

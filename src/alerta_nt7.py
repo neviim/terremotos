@@ -1,14 +1,24 @@
 # -*- coding: UTF-8 -*-
 #
-#   Ambiente de desemvolvimento.
+#   Ambiente de desemvolvimento:
+#       
+#       Dados dos ultimos registros de terremotos no mundo.
+#           
+#           url: http://monitorglobal.com.br/terremotos.html
 #
+#       Referencia: 
+#
+#       $ cd C:\Users\jorge.FCN\Documents\GitHub\_python_projetos
 #       $ cd /home/jorge/src/terremotos/src
 #       $ source ~/virtual/py36/bin/activate
 #       (py36) ➜
 #
-# terremoto_scraping_site
+#  Utilizando:
 #
-__autor__ = "neviim jads - 09/2018"
+#   import alerta_nt7 as tr  
+#
+# ------------------------------
+__autor__ = "neviim jads - 2018"
 
 from pymongo import MongoClient
 from hashlib import md5, sha1
@@ -104,7 +114,13 @@ class AlertaNt7Terremotos(object):
         #jretorno = json.dumps(registro, sort_keys=True, indent=2)
         return registro
 
-    def data_hora(self, localidade='America/Sao_Paulo', formato='%d/%m/%Y %H:%M' ):
+    def data_hora(self, localidade='America/Sao_Paulo', formato='%d/%m/%Y %H:%M'):
+        """retorna data e hora local
+        
+            Keyword Arguments:
+                localidade {str} -- [fuzorario a ser considerado para retornar a hora atual] (default: {'America/Sao_Paulo'})
+                formato {str} -- [formato da hora e data a ser retornado, padrão brasil - sp] (default: {'%d/%m/%Y %H:%M'})
+        """
         data_e_hora_atuais = datetime.now()
         fuso_horario = timezone(localidade)
         data_e_hora_sao_paulo = data_e_hora_atuais.astimezone(fuso_horario)
