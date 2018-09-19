@@ -94,7 +94,7 @@ Git:
       git commit -m "Alteracao na estrutura da base de dados."
       git commit -a -m "Change titles and styling on homepage"  # com este comando pode omitir a etapa do (git add)
       
-
+      git push origin master
 
 
 Pesquisa mongodb:
