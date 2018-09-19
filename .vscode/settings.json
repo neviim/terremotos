@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "C:\\ProgramData\\Anaconda3\\envs\\py37\\python.exe"
+    "python.pythonPath": "/home/neviim/virtual/py36-tr/bin/python3",
+    "python.linting.pylintEnabled": false
 }
