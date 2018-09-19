@@ -11,7 +11,9 @@
 #       $ cd C:\Users\jorge.FCN\Documents\GitHub\_python_projetos
 #       $ cd /home/jorge/src/terremotos/src
 #       $ source ~/virtual/py36/bin/activate
-#       (py36) ➜
+#       (py36-tr) ➜ 
+#       (py36-tr) ➜ pip freeze > requirements.txt
+#       (py36-tr) ➜ pip install -r requirements.txt
 #
 #  Utilizando:
 #
@@ -102,9 +104,13 @@ class AlertaNt7Terremotos(object):
         for terremoto in dados[1]:
             if len(terremoto) == 6:
                 if(float(terremoto[3]) >= 2 ):
+                    data_hora_gmt = terremoto[0].replace('\xa0','').split()
+                    data_hora_bra = terremoto[1].replace('\xa0','').split()
                     registro.append({
-                        'hora_gmt_utc': terremoto[0].replace('\xa0','').split(),
-                        'hora_brasilia':   terremoto[1].replace('\xa0','').split(),
+                        'data_gnt':        data_hora_gmt[0],
+                        'hora_gnt':        data_hora_gmt[1],
+                        'data_bra':        data_hora_bra[0],
+                        'hora_bra':        data_hora_bra[1],
                         'intensidade':     terremoto[2],
                         'magnitude':       terremoto[3],
                         'profundidade':    terremoto[4].replace('\xa0','').split(),
@@ -169,6 +175,10 @@ def main():
     # retorna data e hora local em dois formatos
     data1, data2 = terremotos.data_hora()
     print(data1, data2)
+
+    # d = datetime.datetime(2009, 11, 12, 12)
+    # for post in posts.find({"date": {"$lt": d}}).sort("author"):
+
 
 # -- inicio
 if __name__ == '__main__':

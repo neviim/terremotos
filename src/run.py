@@ -21,7 +21,7 @@ scrap = terremotos.scraping()
 listjson = terremotos.cria_json(scrap)
 
 # os insidentes que nao estiver no banco serão gravados.
-terremotos.grava_novas_ocorrencias(listjson)
+terremotos.grava_novas_ocorrencias(listjson,'localhost')
 
 # retorna data e hora local em dois formatos
 data1, data2 = terremotos.data_hora()
