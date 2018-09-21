@@ -16,14 +16,14 @@ url = 'http://monitorglobal.com.br/terremotos.html'
 tjson = []
 
 # conecta no site e captura as 200 ultimas ocorrencias
-terremotos = tr.AlertaNt7Terremotos(url)
-scrap = terremotos.scraping()
-listjson = terremotos.cria_json(scrap)
+at = AlertaNt7Terremotos(url)
+ultimos200 = at.get_scraping()
+ultimos200_json = at.formato_json(ultimos200)
 
 # os insidentes que nao estiver no banco serão gravados.
-#terremotos.grava_novas_ocorrencias(listjson,'localhost')
-terremotos.grava_novas_ocorrencias(listjson,'zabbixsrv.joaopauloii')
+#at.grava_novas_ocorrencias(ultimos200_json,'localhost')
+at.grava_novas_ocorrencias(ultimos200_json)
 
 # retorna data e hora local em dois formatos
-data1, data2 = terremotos.data_hora()
+data1, data2 = at.data_hora()
 print(data1, data2)

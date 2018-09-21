@@ -20,6 +20,15 @@ Terremotos:
             pip install pytz
 
 
+      VsCode:
+
+            settings.json
+
+                  {
+                        "python.pythonPath": "D:\\__CondaVirtual\\pytr37\\python.exe"
+                  }
+
+
       Banco de dados: 
 
             Mongodb é considerado que esteja Up
@@ -44,8 +53,9 @@ Terremotos:
 
                          cripto_md5(self, texto, encoding='utf-8')
                          cripto_sha1(self, texto, encoding='utf-8')
-                         scraping(self)
-                         cria_json(self, dados)
+                         get_latitude(self, novo_link)
+                         get_scraping(self)
+                         formato_json(self, terremotos)
                          data_hora(self, localidade='America/Sao_Paulo', formato='%d/%m/%Y %H:%M')
                          grava_novas_ocorrencias(self, listjson, host='devops.joaopauloii', porta=27017)
       
