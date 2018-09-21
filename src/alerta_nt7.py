@@ -8,9 +8,17 @@
 #
 #       Referencia: 
 #
+#       $ conda activate D:\__CondaVirtual\pytr37
+#       $ code .
+#       $ conda deactivate
+#
+#       $ conda create --prefix C:\path_do_projeto\py37\ python=3.7
+#       $ conda deactivate
+#
 #       $ cd C:\Users\jorge.FCN\Documents\GitHub\_python_projetos
 #       $ cd /home/jorge/src/terremotos/src
 #       $ source ~/virtual/py36/bin/activate
+#
 #       (py36-tr) ➜ 
 #       (py36-tr) ➜ pip freeze > requirements.txt
 #       (py36-tr) ➜ pip install -r requirements.txt
@@ -35,6 +43,11 @@ class AlertaNt7Terremotos(object):
     def __init__(self, url):
         super(AlertaNt7Terremotos, self).__init__()
         self.url = url
+        self.div_xpath = '//div[@id="sismo_lista"]'
+        self.div_dados = './/div[@style="padding-top:3px"]/text()'
+        self.div_link  = '//a'
+        self.dados = []
+
 
     def cripto_md5(self, texto, encoding='utf-8'):
         """ Criptografa uma string retornando um valor de 32 bytes
@@ -64,6 +77,33 @@ class AlertaNt7Terremotos(object):
         """
         return sha1(texto.encode(encoding)).hexdigest()
 
+    def ultimos(self, quantidade=10):
+        
+        print( self.dados )
+
+        #for item in range(1, quantidade+1):
+        #    print(self.dados[item])
+        return True
+
+    def get_latitude(self, novo_link):
+        """ pega a latitude e a longitude do local do terremoto
+        
+            Arguments:
+                novo_link {[str]} -- [Contem o link de onde sera extraido a latitude e longitude]
+
+            Retorno:
+                {[list]} -- [contendo a latitude, longitude]
+        """
+        response = requests.get(novo_link).text
+        tree = html.fromstring(response)
+        resultado = tree.xpath('.//span[@class="event-coordinates"]/text()')
+        
+        # caso a lista esteja vazia, monta valor zerado para ser retornado.
+        if len(resultado) == 0: 
+            resultado = ['00.000°N', '000.000°W']
+
+        return resultado[0].split()
+
     def scraping(self):
         """ Estrai a lista com os ultimos 200 terremotos ocorridos.
         
@@ -91,6 +131,41 @@ class AlertaNt7Terremotos(object):
 
         return(True, dados)
 
+    def novo_scraping(self):
+        """ Estrai a lista com os ultimos 200 terremotos ocorridos.
+        
+            Retorno:
+                True [{borlean}]        -- [campo logico True caso tudo corra bem e falso se der algo errado]
+                self.dados [{lista}]    -- [lista com todos os 200 dados da lista de terremotos atualizados]
+        """
+        jads = 0
+        dados = []
+        pagina = requests.get(self.url)
+
+        # se pagina for encontrada.
+        if pagina.status_code == 200:
+            tree = html.fromstring(pagina.content)
+
+            for titles in tree.xpath('//div[@id="sismo_lista"]'):
+                dados = titles.xpath('.//div[@style="padding-top:3px"]/text()')
+                links = titles.xpath(".//a/@href")
+
+                #jads = jads + 1
+                #print(links)
+                
+                #if jads == 10:
+                #    break
+
+                # pega a latitude/longitude desta ocorrencia.
+                if len(links) > 0:
+                    latitude = self.get_latitude(links[0])
+                    dados.append(latitude)
+                    #print(latitude)
+                    #print(self.dados)
+                    #print('--->', end='')
+
+        return dados
+
     def cria_json(self, dados):
         """ doarquivo retornado da leitura de pagina dos 200 terremotos, monta um arquivo json
         
@@ -101,11 +176,23 @@ class AlertaNt7Terremotos(object):
                 dicionario no formato json com todos as 200 terromotos ocoridos.
         """
         registro = []
+
+        # print( dados )
+
         for terremoto in dados[1]:
+            
+            # print( len(terremoto))
+
             if len(terremoto) == 6:
-                if(float(terremoto[3]) >= 2 ):
-                    data_hora_gmt = terremoto[0].replace('\xa0','').split()
-                    data_hora_bra = terremoto[1].replace('\xa0','').split()
+
+                #print(terremoto[3])
+                #print(type(terremoto[3]))
+
+                if ( float(terremoto[3]) >= 2 ):
+                    data_hora_gmt  = terremoto[0].replace('\xa0','').split()
+                    data_hora_bra  = terremoto[1].replace('\xa0','').split()
+                    data_latitude  = terremoto[7][0]
+                    data_longitude = terremoto[7][1]
                     registro.append({
                         'data_gnt':        data_hora_gmt[0],
                         'hora_gnt':        data_hora_gmt[1],
@@ -115,6 +202,8 @@ class AlertaNt7Terremotos(object):
                         'magnitude':       terremoto[3],
                         'profundidade':    terremoto[4].replace('\xa0','').split(),
                         'localidade_pais': terremoto[5].split(','),
+                        'latitude':        data_latitude,
+                        "longitude":       data_longitude,
                         'key': self.cripto_sha1(terremoto[0].replace('\xa0','')+terremoto[1].replace('\xa0','')+terremoto[3], encoding='utf-8')
                     })
         #jretorno = json.dumps(registro, sort_keys=True, indent=2)
@@ -131,7 +220,8 @@ class AlertaNt7Terremotos(object):
         fuso_horario = timezone(localidade)
         data_e_hora_sao_paulo = data_e_hora_atuais.astimezone(fuso_horario)
         data_e_hora_sao_paulo_em_texto = data_e_hora_sao_paulo.strftime(formato)
-        return data_e_hora_sao_paulo, data_e_hora_sao_paulo_em_texto
+        #
+        return(data_e_hora_sao_paulo, data_e_hora_sao_paulo_em_texto)
 
     def grava_novas_ocorrencias(self, listjson, host='devops.joaopauloii', porta=27017):
         """ consulta uma nova lista dos 200 ultimos terremotos e grava no banco as ultimas ocorrencias
@@ -166,8 +256,11 @@ def main():
 
     # conecta no site e captura as 200 ultimas ocorrencias
     terremotos = AlertaNt7Terremotos(url)
-    scrap = terremotos.scraping()
-    listjson = terremotos.cria_json(scrap)
+    dadoslista = terremotos.novo_scraping()
+    listjson   = terremotos.cria_json(dadoslista)
+
+    #print(listjson)
+    #return
 
     # os insidentes que nao estiver no banco serão gravados.
     terremotos.grava_novas_ocorrencias(listjson)
@@ -175,6 +268,9 @@ def main():
     # retorna data e hora local em dois formatos
     data1, data2 = terremotos.data_hora()
     print(data1, data2)
+
+    ultimos10 = terremotos.ultimos(10)
+    print(ultimos10)
 
     # d = datetime.datetime(2009, 11, 12, 12)
     # for post in posts.find({"date": {"$lt": d}}).sort("author"):
