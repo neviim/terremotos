@@ -4,6 +4,20 @@
 # cd c:\Users\jorge.FCN\Documents\GitHub\_python_projetos
 # url: http://monitorglobal.com.br/terremotos.html
 #
+# Centos 
+#
+#   $ pip install -r  requirements.txt
+# 
+#       certifi==2018.8.24
+#       chardet==3.0.4
+#       idna==2.7
+#       lxml==4.2.5
+#       pymongo==3.7.1
+#       pytz==2018.5
+#       requests==2.19.1
+#       urllib3==1.23
+#
+#
 # uso: python run.py
 #
 # ------------------------------

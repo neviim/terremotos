@@ -158,12 +158,12 @@ class AlertaNt7Terremotos(object):
                         'hora_gnt':        data_hora_gmt[1],
                         'data_bra':        data_hora_bra[0],
                         'hora_bra':        data_hora_bra[1],
-                        'intensidade':     terremoto[2],
-                        'magnitude':       terremoto[3],
+                        'intensidade':     float(terremoto[2]),
+                        'magnitude':       float(terremoto[3]),
                         'profundidade':    terremoto[4].replace('\xa0','').split(),
                         'localidade_pais': terremoto[5].split(','),
-                        'latitude':        data_latitude,
-                        "longitude":       data_longitude,
+                        'latitude':        float(data_latitude),
+                        "longitude":       float(data_longitude),
                         'key':             data_key
                     })
         return registro
@@ -182,7 +182,7 @@ class AlertaNt7Terremotos(object):
         #
         return(data_e_hora_sao_paulo, data_e_hora_sao_paulo_em_texto)
 
-    def grava_novas_ocorrencias(self, listjson, host='devops.joaopauloii', porta=27017):
+    def grava_novas_ocorrencias(self, listjson, host='10.0.9.18', porta=27017):
         """ consulta uma nova lista dos 200 ultimos terremotos e grava no banco as ultimas ocorrencias
         
             Arguments:
@@ -230,7 +230,7 @@ def main():
     ultimos200_json = alertaTerremotos.formato_json(ultimos200)
 
     # os insidentes que nao estiver no banco serão gravados.
-    alertaTerremotos.grava_novas_ocorrencias(ultimos200_json, "10.0.9.95")
+    alertaTerremotos.grava_novas_ocorrencias(ultimos200_json, "10.0.9.18")
 
     # retorna data e hora local em dois formatos
     #data1, data2 = alertaTerremotos.data_hora()
