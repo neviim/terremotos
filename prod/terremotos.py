@@ -158,12 +158,12 @@ class AlertaNt7Terremotos(object):
                         'hora_gnt':        data_hora_gmt[1],
                         'data_bra':        data_hora_bra[0],
                         'hora_bra':        data_hora_bra[1],
-                        'intensidade':     float(terremoto[2]),
-                        'magnitude':       float(terremoto[3]),
+                        'intensidade':     terremoto[2],
+                        'magnitude':       terremoto[3],
                         'profundidade':    terremoto[4].replace('\xa0','').split(),
                         'localidade_pais': terremoto[5].split(','),
-                        'latitude':        float(data_latitude),
-                        "longitude":       float(data_longitude),
+                        'latitude':        data_latitude,
+                        "longitude":       data_longitude,
                         'key':             data_key
                     })
         return registro
