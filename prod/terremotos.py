@@ -8,6 +8,8 @@
 #
 #       Referencia: 
 #
+#       $ conda activate py37
+#
 #       $ conda activate D:\__CondaVirtual\pytr37
 #       $ code .
 #       $ conda deactivate
@@ -126,57 +128,6 @@ class AlertaNt7Terremotos(object):
 
         return terremotos
 
-    def grava_arangodb(self, terremotos):
-         """ do arquivo retornado da leitura de pagina dos 200 terremotos, armazena em banco nosql ArangoDB
-        
-            Arguments:
-                terremotos {[list]} -- [contem o retorno dos ultimos 200 terremotos registrados ate o momento]
-
-            Retorno:
-                dicionario no formato json com todos as 200 terromotos ocoridos.
-        """
-        # Conectar ao banco arangodb
-        conn = Connection(arangoURL="http://10.0.9.18:8529", username="terremoto", password="terremoto")
-
-        # Abre ou cria Database
-        if conn.hasDatabase("terremotosdb"):
-            db = conn["terremotosdb"]
-        else:
-            db = conn.createDatabase(name="terremotosdb")
-
-        # Abre ou cria Collection
-        if db.hasCollection("terremotos"):
-            terremotosCollection = db["terremotos"]
-        else: 
-            terremotosCollection = db.createCollection(name="terremotos")
-
-        print("Processando geração de json...")
-
-        for terremoto in terremotos:  # --- Criando este metodo ---#
-
-            # só se ouver registro sísmico a ser processado
-            if len(terremoto) == 7:
-                # somente se o terremoto tiver magnitude maior que 2.
-                if ( float(terremoto[3]) >= 2 ):
-                    # limpa e filtra dados a serem registrados.
-                    data_hora_gmt  = terremoto[0].replace('\xa0','').split()
-                    data_hora_bra  = terremoto[1].replace('\xa0','').split()
-                    data_latitude  = terremoto[6][0]
-                    data_longitude = terremoto[6][1]
-                    data_key       = self.cripto_sha1(terremoto[0].replace('\xa0','')+terremoto[1].replace('\xa0','')+terremoto[3], encoding='utf-8')
-
-                    # cria estrutura de dados para gravar no ArangoDB.
-                    doc = terremotosCollection.createDocument()
-                    doc['key'] = data_key
-                    doc['fcn_local'] = ''.join([str(reg1),"/",str(df1Total)])
-                    doc['fac_local'] = ''.join([str(reg2),"/",str(df2Total)])
-                    doc['fcn'] = reg1 
-                    doc['fac'] = reg2
-                    doc._key   = ''.join(["fcn_fac", str(df2.follower[reg2])]).lower() 
-                    doc.save() 
-
-        return registro
-
     def formato_json(self, terremotos):
         """ do arquivo retornado da leitura de pagina dos 200 terremotos, monta um arquivo json
         
@@ -281,6 +232,9 @@ def main():
     ultimos200 = alertaTerremotos.get_scraping()
     ultimos200_json = alertaTerremotos.formato_json(ultimos200)
 
+    # grava direto ao nosql ArangoDB
+    alertaTerremotos.grava_arangodb(ultimos200)
+
     # os insidentes que nao estiver no banco serão gravados.
     alertaTerremotos.grava_novas_ocorrencias(ultimos200_json, "10.0.9.18")
 
@@ -298,6 +252,3 @@ def main():
 # -- inicio
 if __name__ == '__main__':
     main()
-
-
-
