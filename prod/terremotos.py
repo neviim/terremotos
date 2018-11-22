@@ -232,9 +232,6 @@ def main():
     ultimos200 = alertaTerremotos.get_scraping()
     ultimos200_json = alertaTerremotos.formato_json(ultimos200)
 
-    # grava direto ao nosql ArangoDB
-    alertaTerremotos.grava_arangodb(ultimos200)
-
     # os insidentes que nao estiver no banco serão gravados.
     alertaTerremotos.grava_novas_ocorrencias(ultimos200_json, "10.0.9.18")
 

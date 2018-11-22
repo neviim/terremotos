@@ -1,6 +1,10 @@
 # -*- coding: UTF-8 -*-
-#
 # ArangoDB v3.0
+#
+# - Esta bem mais otimisado que terremotos.py
+#   arangomot.py
+#
+# por: Neviim
 #
 from hashlib import md5, sha1
 from lxml import html
@@ -36,9 +40,21 @@ class CapturaTerremotos(object):
         """
         return md5(texto.encode(encoding)).hexdigest()
 
-    def gravaEmArangoDB(self, terremotos):
+    def gravaEmArangoDB(self, terremoto):
+        """
+            # Queries
+                For terremoto in terremotos
+                    filter terremoto._key == "jadsid:3d0ca30417aba133826c4a4160bb9ce4"
+                return terremoto
 
-        conn = Connection( arangoURL="http://10.0.9.18:8529", username="terremoto", password="terremoto" )
+            # implementando 
+                aql = "FOR c IN users FILTER c.name == @name LIMIT 10 RETURN c"
+                bindVars = {'name': 'Tesla-3'}
+                # definindo rawResults como True, você obterá dicionários em vez de objetos Document, úteis se você desejar resultar em um conjunto de campos, por exemplo
+                queryResult = db.AQLQuery(aql, rawResults=False, batchSize=1, bindVars=bindVars)
+                document = queryResult[0]
+        """
+        conn = Connection(arangoURL="http://10.0.9.18:8529", username="terremoto", password="terremoto")
 
         # Abre ou cria Database
         if conn.hasDatabase("terremotosdb"):
@@ -52,39 +68,37 @@ class CapturaTerremotos(object):
         else: 
             terremotosCollection = db.createCollection(name="terremotos")
 
-        print("Gravando itens no banco (arangodb).")
+        #print("Gravando itens no banco (arangodb).")
 
-        for item in terremotos:
-            # Cria estrutura de dados para banco terremotosdb collection terremotos
+        # terremotos um item:
+        # [['08/11/2018', '15:01'], ['08/11/2018', '12:01'], 'Terremoto Moderado', 4.6, 
+        #  [19.98, 'km'], [[41.0, 'km', 'ESE'], 'of Kulob', ' Tajikistan']]
+        if len(terremoto) == 6:
 
-            #print(terremotos)
-            #print(len(terremotos))
+            keyid = ''.join(["jadsid:", self.criptoMD5(str(terremoto))]).lower()
 
-            # terremotos um item:
-            # [['08/11/2018', '15:01'], ['08/11/2018', '12:01'], 'Terremoto Moderado', 4.6, 
-            #  [19.98, 'km'], [[41.0, 'km', 'ESE'], 'of Kulob', ' Tajikistan']]
-            if len(terremotos) == 6:
+            # ... estrutura para pesquisar por registro utilisando a cheve '_key' do documento.
+            aql = "FOR terremoto IN terremotos FILTER terremoto._key == @key RETURN terremoto"
+            bindVars = {'key': keyid}
+            queryResult = db.AQLQuery(aql, rawResults=False, batchSize=1, bindVars=bindVars)
+            #documento = queryResult[0]
+            #print("QueryResult...")
+            #print(len(queryResult))
+            
+            if len(queryResult) == 0: # Key não foi encontrada, portanto arquivea.
 
-
-                # parado aqui com erro:
-                #               File "arangomot.py", line 77, in gravaEmArangoDB
-                #               doc['intensidade' ] = item[2]
-                #               IndexError: list index out of range
-
-
-                print(terremotos)
-                print(item)
+                print(terremoto)
 
                 doc = terremotosCollection.createDocument()
-                doc._key = ''.join(["jadsid:", self.criptoMD5(str(item))]).lower()
-                doc['dataGmt'     ] = item[0][0]
-                doc['horaGmt'     ] = item[0][1]
-                doc['dataBra'     ] = item[1][0]
-                doc['horaBra'     ] = item[1][1]
-                doc['intensidade' ] = item[2]
-                doc['magnitude'   ] = item[3]
-                doc['profundidade'] = item[4]
-                doc['localidade'  ] = item[5]
+                doc._key = keyid
+                doc['dataGmt'     ] = terremoto[0][0]
+                doc['horaGmt'     ] = terremoto[0][1]
+                doc['dataBra'     ] = terremoto[1][0]
+                doc['horaBra'     ] = terremoto[1][1]
+                doc['intensidade' ] = terremoto[2]
+                doc['magnitude'   ] = terremoto[3]
+                doc['profundidade'] = terremoto[4]
+                doc['localidade'  ] = terremoto[5]
                 doc.save()
 
         return
@@ -195,9 +209,8 @@ class CapturaTerremotos(object):
 
                 # Rotina Temporaria -------
                 conta = conta + 1
-                if conta == 5: 
-                    #print(terremotos)
-                    return
+                #if conta == 5: 
+                #    return
                 # Fim rotina temporaria ---
 
         return terremotos
