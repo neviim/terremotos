@@ -8,20 +8,20 @@
 #
 #       Referencia: 
 #
-#       $ conda activate D:\__CondaVirtual\pytr37
+#       $ conda activate \__CondaVirtual\pytr37
 #       $ code .
 #       $ conda deactivate
 #
-#       $ conda create --prefix C:\path_do_projeto\py37\ python=3.7
+#       $ conda create --prefix \path_do_projeto\py37\ python=3.7
 #       $ conda deactivate
 #
-#       $ cd C:\Users\jorge.FCN\Documents\GitHub\_python_projetos
+#       $ cd \Users\jorge.FCN\Documents\GitHub\_python_projetos
 #       $ cd /home/jorge/src/terremotos/src
-#       $ source ~/virtual/py36/bin/activate
+#       $ source ~/virtual/py37/bin/activate
 #
-#       (py36-tr) ➜ 
-#       (py36-tr) ➜ pip freeze > requirements.txt
-#       (py36-tr) ➜ pip install -r requirements.txt
+#       (py37-tr) ➜ 
+#       (py37-tr) ➜ pip freeze > requirements.txt
+#       (py37-tr) ➜ pip install -r requirements.txt
 #
 #  Utilizando:
 #
@@ -29,6 +29,7 @@
 #
 # ------------------------------
 __autor__ = "neviim jads - 2018"
+__version__ = "0.1.5"
 
 from pymongo import MongoClient
 from hashlib import md5, sha1
@@ -37,6 +38,7 @@ from datetime import datetime
 from pytz import timezone
 
 import requests
+import config as cf
 import json
 
 class AlertaNt7Terremotos(object):
@@ -56,7 +58,7 @@ class AlertaNt7Terremotos(object):
                 texto {[str]}    -- [testo a ser criptografado]
             
             Keyword Arguments:
-                encoding {str} -- [padrão ansi a ser utilizado no testo] (default: {'utf-8'})
+                encoding {str}   -- [padrão ansi a ser utilizado no testo] (default: {'utf-8'})
 
             Retorno:
                 texto criptografado.
@@ -67,7 +69,7 @@ class AlertaNt7Terremotos(object):
         """ Criptografa uma string retornando um valor de 40 bytes
         
             Arguments:
-                texto {[str]} -- [testo a ser criptografado]
+                texto {[str]}  -- [testo a ser criptografado]
             
             Keyword Arguments:
                 encoding {str} -- [padão ansi a sr utilizado no testo] (default: {'utf-8'})
@@ -84,7 +86,7 @@ class AlertaNt7Terremotos(object):
                 link {[str]} -- [Contem o link de onde sera extraido a latitude e longitude]
 
             Retorno:
-                {[list]} -- [contendo a latitude, longitude]
+                {[list]}     -- [contendo a latitude, longitude]
         """
         response = requests.get(link).text
         tree = html.fromstring(response)
@@ -97,10 +99,10 @@ class AlertaNt7Terremotos(object):
         return resultado[0].split()
 
     def get_scraping(self):
-        """ Estrai a lista com os ultimos 200 terremotos ocorridos.
+        """ Extrai a lista com os ultimos 200 terremotos ocorridos.
         
             Retorno:
-                self.dados [{lista}]    -- [lista com todos os 200 dados da lista de terremotos atualizados]
+                self.dados [{lista}]  -- [lista com todos os 200 dados da lista de terremotos atualizados]
         """
         dados = []
         terremotos = []
@@ -126,7 +128,7 @@ class AlertaNt7Terremotos(object):
         return terremotos
 
     def formato_json(self, terremotos):
-        """ doarquivo retornado da leitura de pagina dos 200 terremotos, monta um arquivo json
+        """ do arquivo retornado da leitura de pagina dos 200 terremotos, monta um arquivo json
         
             Arguments:
                 terremotos {[list]} -- [contem o retorno dos ultimos 200 terremotos registrados ate o momento]
@@ -168,12 +170,12 @@ class AlertaNt7Terremotos(object):
                     })
         return registro
 
-    def data_hora(self, localidade='America/Sao_Paulo', formato='%d/%m/%Y %H:%M'):
-        """retorna data e hora local
+    def data_hora(self, localidade=cf.localidade, formato='%d/%m/%Y %H:%M'):
+        """ retorna data e hora local
         
             Keyword Arguments:
-                localidade {str} -- [fuzorario a ser considerado para retornar a hora atual] (default: {'America/Sao_Paulo'})
-                formato {str} -- [formato da hora e data a ser retornado, padrão brasil - sp] (default: {'%d/%m/%Y %H:%M'})
+                localidade {str} -- [fuso horário a ser considerado para retornar a hora atual]  (default: {'America/Sao_Paulo'})
+                formato {str}    -- [formato da hora e data a ser retornado, padrão brasil - sp] (default: {'%d/%m/%Y %H:%M'})
         """
         data_e_hora_atuais = datetime.now()
         fuso_horario = timezone(localidade)
@@ -182,14 +184,14 @@ class AlertaNt7Terremotos(object):
         #
         return(data_e_hora_sao_paulo, data_e_hora_sao_paulo_em_texto)
 
-    def grava_novas_ocorrencias(self, listjson, host='tilab.joaopauloii', porta=27017):
+    def grava_novas_ocorrencias(self, listjson, host=cf.mongodb_host, porta=cf.mongodb_port):
         """ consulta uma nova lista dos 200 ultimos terremotos e grava no banco as ultimas ocorrencias
         
             Arguments:
                 listjson {[list]} -- [lista contendo as ultimas 200 ocorrencias de terremoto no mundo]
             
             Keyword Arguments:
-                host {str}  -- [host do banco de dados mongodb ao qual sera gravado estas novas ocorrencias] (default: {'devops.joaopauloii'})
+                host {str}  -- [host do banco de dados mongodb ao qual sera gravado estas novas ocorrencias] (default: {cf.mongodb_host})
                 porta {int} -- [porta a qual o cliente mongodb deve se conectar] (default: {27017})
         """
         # conecta ao mongodb, defini collection terremoto
@@ -221,7 +223,7 @@ class AlertaNt7Terremotos(object):
 # -- main, 
 def main():
     # utilizando class alertaNt7Terremotos estrair dados
-    url = 'http://monitorglobal.com.br/terremotos.html'
+    url = cf.url_site_terremotos
     tjson = []
 
     # conecta no site e captura as 200 ultimas ocorrencias
@@ -230,7 +232,7 @@ def main():
     ultimos200_json = alertaTerremotos.formato_json(ultimos200)
 
     # os insidentes que nao estiver no banco serão gravados.
-    alertaTerremotos.grava_novas_ocorrencias(ultimos200_json, "tilab.joaopauloii")
+    alertaTerremotos.grava_novas_ocorrencias(ultimos200_json, cf.mongodb_host)
 
     # retorna data e hora local em dois formatos
     #data1, data2 = alertaTerremotos.data_hora()

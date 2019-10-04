@@ -25,7 +25,7 @@ Terremotos:
             settings.json
 
                   {
-                        "python.pythonPath": "D:\\__CondaVirtual\\pytr37\\python.exe"
+                        "python.pythonPath": "\\__CondaVirtual\\pytr37\\python"
                   }
 
 

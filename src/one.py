@@ -1,1 +1,3 @@
-print("Ola python!")
+import config as cf
+
+print(cf.mongohost)
