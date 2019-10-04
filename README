@@ -82,15 +82,15 @@ Terremotos:
 
 
 
-      Maquina virtual: ~/virtual/py36
+      Maquina virtual: ~/virtual/py367
 
-            Utilizando python 3.6
+            Utilizando python 3.7
 
             $ source ~/virtual/py36/bin/activate
                         
-            (py36) ➜
-            (py36) ➜
-            (py36) ➜ python alerta_nt7.py 
+            (py37) ➜
+            (py37) ➜
+            (py37) ➜ python alerta_nt7.py 
 
 
 
