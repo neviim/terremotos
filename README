@@ -12,12 +12,21 @@ Terremotos:
 
             pip install -r requirements.txt
 
-            ou
+            
+            Implementando Influxdb:
+                  $ pip install influxdb
+                  $ pip install --upgrade influxdb
+                  $ pip uninstall influxdb
 
-            pip install requests
-            pip install pymongo
-            pip install lxml
-            pip install pytz
+            Querendo testar o funcionamento em n vorsões python:
+
+                  # pip install pytest
+                  $ pip install tox
+                  $ tox -e docs
+
+                  # Gerar um arquivo tox.ini automaticamente
+                  $ tox-quickstart
+                  $ pytest
 
 
       VsCode:
