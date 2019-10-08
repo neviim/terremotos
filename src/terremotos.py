@@ -199,13 +199,21 @@ class AlertaNt7Terremotos(object):
         db = client.terremotos
         collection = db['registros']
 
-        print("Processando gravando em banco...")
+        print("Processando gravando em banco...\n")
+
+        totalNovosTerremotos = 0
 
         # grava cada (colection) registro no banco.
         for item in listjson:
             if collection.find_one({'key': item['key']}) == None: 
                 rec_id = collection.insert_one(item)
-                print(f"Registro: {item['key']} foi adicionado ao banco.")         
+                print(f"Registro: {item['key']} foi adicionado ao banco.")
+                totalNovosTerremotos += 1
+
+        # printa o total novos terremotos ocorrido de da ultima execução do script
+        print()
+        print("Total de novas ocorrencias: " +str(totalNovosTerremotos))
+        print()
 
         # fecha conecção com o banco
         client.close()
