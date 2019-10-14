@@ -8,8 +8,15 @@ Terremotos:
             for necessária, ele só fará o incremento caso seja uma nova ocorrência.
 
 
+      Virtualenv:
+
+            $ sudo virtualenv --python=python3.7 terremotos
+            $ source ~/virtual/terremotos/bin/activate
+            (terremotos) ➜
+
       Dependencias:
 
+            pip install --upgrade pip
             pip install -r requirements.txt
 
             
@@ -100,6 +107,14 @@ Terremotos:
             (py37) ➜
             (py37) ➜
             (py37) ➜ python alerta_nt7.py 
+
+
+      Crontab:
+
+            # fara com que este script seje executado a cada 30 minutos, 
+            # respeitando as configuracoes da maquina virtual: /home/neviim/virtual/terremotos 
+            $ crontab -e
+            0,30 * * * * cd /home/neviim/src/_projetos/terremotos/src && /home/neviim/virtual/terremotos/bin terremotos.py > /dev/null 2>&1
 
 
 
