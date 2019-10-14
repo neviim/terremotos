@@ -114,7 +114,7 @@ Terremotos:
             # fara com que este script seje executado a cada 30 minutos, 
             # respeitando as configuracoes da maquina virtual: /home/neviim/virtual/terremotos 
             $ crontab -e
-            0,30 * * * * cd /home/neviim/src/_projetos/terremotos/src && /home/neviim/virtual/terremotos/bin terremotos.py > /dev/null 2>&1
+            0,30 * * * * cd /home/neviim/src/_projetos/terremotos/src && /home/neviim/virtual/terremotos/bin/python terremotos.py > /dev/null 2>&1
 
 
 
