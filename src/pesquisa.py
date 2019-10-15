@@ -12,10 +12,12 @@ from lxml import html
 from datetime import datetime
 from pytz import timezone
 from geopy.geocoders import Nominatim
+from pprint import pprint
 
 import requests
 import config as cf
 import json
+
 # .........
 
 
@@ -32,11 +34,36 @@ porta = cf.mongodb_port
 client  = MongoClient(host, porta)
 db = client.terremotos
 collection = db['registros']
-# --------------------------
 
+# ------------------------
+''' Modelo de um registro:
 
+    {'_id': ObjectId('5be0821b57f41c645fc45bdd'),
+    'data_bra': '05/11/2018',
+    'data_gnt': '05/11/2018',
+    'hora_bra': '04:27',
+    'hora_gnt': '07:27',
+    'intensidade': 'Terremoto Moderado',
+    'key': 'f2d23e3a001bf654b6b839330c7be84f86c04840',
+    'latitude': '000.000°N',
+    'localidade_pais': ['86km SSW of Puerto El Triunfo', ' El Salvador'],
+    'longitude': '000.000°W',
+    'magnitude': '4.5',
+    'profundidade': ['40.43', 'km']
+    }
+'''
 
+# imprime o primeiro poste registrado.
+#pprint(collection.find_one())
+#pprint(collection.find_one({"magnitude": "6"}))
 
+# Postagens anteriores a uma determinada data, mas também classificamos os resultados por magnitude:
+#d = datetime(2019, 1, 1, 12)
+d = "05/11/2018"
+
+for post in collection.find({"data_bra": {"$lt": d}}).sort("magnitude"):
+    print()
+    pprint(post)
 
 
 # close.......
