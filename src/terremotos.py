@@ -29,13 +29,14 @@
 #
 # ------------------------------
 __autor__ = "neviim jads - 2018"
-__version__ = "0.1.5"
+__version__ = "0.2.0"
 
 from pymongo import MongoClient
 from hashlib import md5, sha1
 from lxml import html
 from datetime import datetime
 from pytz import timezone
+from geopy.geocoders import Nominatim
 
 import requests
 import config as cf
@@ -153,7 +154,11 @@ class AlertaNt7Terremotos(object):
                     data_hora_bra  = terremoto[1].replace('\xa0','').split()
                     data_latitude  = terremoto[6][0]
                     data_longitude = terremoto[6][1]
-                    data_key       = self.cripto_sha1(terremoto[0].replace('\xa0','')+terremoto[1].replace('\xa0','')+terremoto[3], encoding='utf-8')
+                    data_key = self.cripto_sha1(terremoto[0].replace('\xa0','')+terremoto[1].replace('\xa0','')+terremoto[3], encoding='utf-8')
+                    
+                    #não implementado.
+                    #data_latitude, data_longitude = self.geo_localizacao(terremoto[5]) # pesquisa/processa e retorna latitude e longitude da localidade
+                    
                     # gera um registro de dados do terremoto
                     registro.append({
                         'data_gnt':        data_hora_gmt[0],
@@ -206,6 +211,7 @@ class AlertaNt7Terremotos(object):
         # grava cada (colection) registro no banco.
         for item in listjson:
             if collection.find_one({'key': item['key']}) == None: 
+                # grava a ocorrencia de terremoto em banco.
                 rec_id = collection.insert_one(item)
                 print(f"Registro: {item['key']} foi adicionado ao banco.")
                 totalNovosTerremotos += 1
@@ -220,13 +226,61 @@ class AlertaNt7Terremotos(object):
         return
 
     def ultimos(self, quantidade=10):
-        
+        """ """
         print( self.dados )
 
         #for item in range(1, quantidade+1):
         #    print(self.dados[item])
         return True
 
+    def geo_localizacao(self, localidade):
+        """ Consulta site para pegar a latitude, longitude da localidade do terremoto
+         
+            Arguments:
+                localidades {[vetor]} - [contem duas strings Localidade e pais] 
+
+                Ex: ['10km WNW of Ndoi Island', ' Fiji']
+
+            Variaveis:
+                local[0] = Localidade
+                local[1] = Pais
+        """
+        # local é um vetor["localidade", "pais"]
+        conteudo = localidade.split(',')
+        local = conteudo[0]
+        pais = ""
+
+        ### Refatorar esta abordagem ......................
+
+        # algumas localidades estão sem o pais, < 1
+        if len(conteudo) > 1: 
+            pais = conteudo[1].strip()
+        else: 
+            # Esta opção trata casos como ilhas ex: (Fiji) 
+            # pais por estar em branco recebera a região
+            # Ex: 'South of the Fiji Islands', pais = "South" 
+            sub_local = local.split(' of ')
+            pais = sub_local[0]
+          
+        of_inicio = local.find(" of ") + 4   # encontra a posicao de "of" na string, (+4) seta ponteiro para proxima palavra.
+        local = local[of_inicio:len(local)]  # remove a Km/SW deixando somente a localidade.
+
+        # retorna a latitude e longitude da localidade
+        geolocalizacao = Nominatim(user_agent="terremotos")
+        locacao = geolocalizacao.geocode(local, pais)
+
+        # caso nao tenha resultado com o local, procura só pelo pais
+        if locacao == None:
+            locacao = geolocalizacao.geocode(pais)
+        
+        print()
+        print(conteudo)
+        print(locacao)
+
+        ### tratar localidade retornada maior que uma ...
+
+
+        return (locacao.latitude, locacao.longitude)
 
 # -- main, 
 def main():
